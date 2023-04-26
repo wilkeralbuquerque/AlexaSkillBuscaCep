@@ -4,6 +4,7 @@
  * session persistence, api calls, and more.
  * */
 const Alexa = require('ask-sdk-core');
+const XMLHttpRequest = require('https').XMLHttpRequest;
 
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
@@ -19,14 +20,29 @@ const LaunchRequestHandler = {
     }
 };
 
+function makePostRequest(url, cep) {
+    var regExp = RegExp();
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url +'/'+ cep.trim().replace(/[.-]/g,'') + '/json', false);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function() {
+    if (this.readyState === 4 && this.status === 200) {
+        const response = JSON.stringify(xhr.responseText);
+        return `Você mora na ${response.logradouro}, bairro ${response.bairro}, cidade ${response.localidade} e DDD ${response.ddd}.`
+        }
+    };
+}
+
 const BuscaCepIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'BuscaCepIntent';
     },
     handle(handlerInput) {
-        const speakOutput = 'Hello World!';
+        const cep = handlerInput.requestEnvelope.request.intent.slots.cep.value;
+        
 
+        const speakOutput = makePostRequest('https://viacep.com.br/ws',cep)
         return handlerInput.responseBuilder
             .speak(speakOutput)
             //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
