@@ -4,7 +4,7 @@
  * session persistence, api calls, and more.
  * */
 const Alexa = require('ask-sdk-core');
-const https = require('https');
+
 
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
@@ -20,49 +20,26 @@ const LaunchRequestHandler = {
     }
 };
 
-async function makePostRequest(url, cep) {
+ function makePostRequest(url, cep) {
     var regExp = RegExp();
-    console.log("teste")
-    const options = {
-        hostname: url +'/'+ cep.trim().replace(/[.-]/g,'') + '/json',
-        method:'GET'
-    }
-    console.log("teste 2");
-    const res = await new Promise((resolve, reject)=> { 
-        console.log("teste  in promise");
-        const req = https.request(options, (res)=>{
-            let data = '';
-            console.log("teste in await");
-            res.on('data', (chunck) =>{
-                console.log("teste in chunck");
-                data +=chunck;
-                console.log("teste data")
-                console.log(data)
-                console.log("teste data concluido")
-            });
-            res.on('end',()=>{
-                resolve({statusCode:res.statusCode, body: data
-                    
-                });
-            })
-            
-        });
-        req.on('error', (error) =>{
-            reject(error)
-        });
-        req.end()
-    });
-    console.log("teste 4");
+    console.log("teste");
+    const https = require('https');
+    hostname: 
     
-    if( res.statusCode === 200){
-        console.log(JSON.stringify(res));
-        const response = JSON.parse(res.body);
-        console.log("teste dentro do if final.");
-        return `Você mora na ${response.logradouro}, bairro ${response.bairro}, cidade ${response.localidade} e DDD ${response.ddd}.`
-    }else{
-        console.log("teste dentro do if final, solicitação com erro");
-        return `Erro ao realizar a solicitação status retornado ${res.statusCode}`
-    }
+    console.log("teste 2");
+    return  new Promise((resolve, reject)=> { 
+        console.log("teste  in promise");
+        const req = https.get(url +'/'+ cep.trim().replace(/[.-]/g,'') + '/json', (res)=>{
+            if(res.statusCode<200 || res.statusCode > 299){
+                reject(new Error('Falha na consulta ao via cep. Status retornado?' + res.statusCode))
+            }
+            const data = [];
+            console.log("teste in await");
+            res.on('data', (chunck) => data.push(chunck));
+            res.on('end',()=>resolve(data.join('')))
+        });
+        req.on('error', (error) =>reject(error));
+    });
 }
 
 const BuscaCepIntentHandler = {
@@ -70,11 +47,21 @@ const BuscaCepIntentHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'BuscaCepIntent';
     },
-    async handle(handlerInput) {
+    handle(handlerInput) {
         const cep = handlerInput.requestEnvelope.request.intent.slots.cep.value;
+        const res = makePostRequest('viacep.com.br/ws',cep);
+        console.log('teste passou consulta')
+        let speakOutput = '';
+    if( res.statusCode === 200){
+        console.log(JSON.stringify(res));
+        const response = JSON.parse(res.body);
+        console.log("teste dentro do if final.");
+        speakOutput = `Você mora na ${response.logradouro}, bairro ${response.bairro}, cidade ${response.localidade} e DDD ${response.ddd}.`
+    }else{
+        console.log("teste dentro do if final, solicitação com erro");
+        speakOutput = `Erro ao realizar a solicitação status retornado ${res.statusCode}`
+    }
         
-
-        const speakOutput = await makePostRequest('viacep.com.br/ws',cep)
         return handlerInput.responseBuilder
             .speak(speakOutput)
             //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
