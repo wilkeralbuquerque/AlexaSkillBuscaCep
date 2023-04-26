@@ -20,21 +20,45 @@ const LaunchRequestHandler = {
     }
 };
 
-function makePostRequest(url, cep) {
+async function makePostRequest(url, cep) {
     var regExp = RegExp();
     console.log("teste")
     const options = {
         method:'GET',
-        hostname: url + '/'+ cep.trim().replace(/[.-]/g,'') + '/json'
+        hostname: url,
+        path:  '/'+ cep.trim().replace(/[.-]/g,'') + '/json'
     }
     console.log("teste 2");
-    const res = https.request(options);
+    const res = await new Promise((resolve, reject)=> { 
+        const req = https.request(options, (res)=>{
+            let data = '';
+            res.on('data', (chunck) =>{
+                data +=chunck;
+                console.log("teste data")
+                console.log(data)
+                console.log("teste data concluido")
+            });
+            res.on('end',()=>{
+                resolve({statusCode:res.statusCode, body: data
+                    
+                });
+            })
+            
+        });
+        req.on('error', (error) =>{
+            reject(error)
+        });
+        req.end()
+    });
     console.log("teste 4");
+    
     if( res.statusCode === 200){
         console.log(JSON.stringify(res));
-        const response = res.body
+        const response = JSON.parse(res.body);
+        console.log("teste dentro do if final.");
         return `Você mora na ${response.logradouro}, bairro ${response.bairro}, cidade ${response.localidade} e DDD ${response.ddd}.`
     }else{
+        console.log("teste dentro do if final, solicitação com erro");
         return `Erro ao realizar a solicitação status retornado ${res.statusCode}`
     }
 }
@@ -44,11 +68,11 @@ const BuscaCepIntentHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'BuscaCepIntent';
     },
-    handle(handlerInput) {
+    async handle(handlerInput) {
         const cep = handlerInput.requestEnvelope.request.intent.slots.cep.value;
         
 
-        const speakOutput = makePostRequest('https://viacep.com.br/ws',cep)
+        const speakOutput = await makePostRequest('https://viacep.com.br/ws',cep)
         return handlerInput.responseBuilder
             .speak(speakOutput)
             //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
