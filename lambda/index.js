@@ -32,6 +32,7 @@ function makePostRequest(url, cep) {
     const res = https.request(options);
     console.log("teste 4");
     if( res.statusCode == 200){
+        console.log(JSON.stringify(res));
         const response = res.body
         return `Você mora na ${response.logradouro}, bairro ${response.bairro}, cidade ${response.localidade} e DDD ${response.ddd}.`
     }else{
