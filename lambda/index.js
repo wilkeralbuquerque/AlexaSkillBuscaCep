@@ -34,10 +34,9 @@ const LaunchRequestHandler = {
             }
             const data = [];
             console.log("teste in await");
-            res.on('data', (chunck) => data.push(chunck));
+            res.on('data', (chunk) => data.push(chunk));
             res.on('end',()=>resolve(data.join('')))
         });
-        console.log(JSON.stringify(req))
         req.on('error', (error) =>reject(error));
     });
 }
@@ -47,20 +46,19 @@ const BuscaCepIntentHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'BuscaCepIntent';
     },
-    handle(handlerInput) {
+   async handle(handlerInput) {
+       let speakOutput = '';
         const cep = handlerInput.requestEnvelope.request.intent.slots.cep.value;
-        const res = makePostRequest('https://viacep.com.br/ws',cep);
+        await makePostRequest('https://viacep.com.br/ws',cep).then((response)=>{
         console.log('teste passou consulta')
-        let speakOutput = '';
-    if( res.statusCode === 200){
+        const res = JSON.parse(response);
         console.log(JSON.stringify(res));
-        const response = JSON.parse(res.body);
         console.log("teste dentro do if final.");
-        speakOutput = `Você mora na ${response.logradouro}, bairro ${response.bairro}, cidade ${response.localidade} e DDD ${response.ddd}.`
-    }else{
+        speakOutput = `Você mora na ${res.logradouro}, bairro ${res.bairro}, cidade ${res.localidade} e DDD ${res.ddd}.`
+        }).catch((error)=>{
         console.log("teste dentro do if final, solicitação com erro");
-        speakOutput = `Erro ao realizar a solicitação status retornado ${res.statusCode}`
-    }
+        speakOutput = `Erro ao realizar a solicitação status retornado. ${error.message}`
+        })
         
         return handlerInput.responseBuilder
             .speak(speakOutput)
