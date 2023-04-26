@@ -32,7 +32,9 @@ async function makePostRequest(url, cep) {
     const res = await new Promise((resolve, reject)=> { 
         const req = https.request(options, (res)=>{
             let data = '';
+            console.log("teste in await");
             res.on('data', (chunck) =>{
+                console.log("teste in chunck");
                 data +=chunck;
                 console.log("teste data")
                 console.log(data)
