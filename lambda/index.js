@@ -31,15 +31,13 @@ function makePostRequest(url, cep) {
     console.log("teste 2");
     const res = https.request(options);
     console.log("teste 4");
-    if( res.statusCode == 200){
+    if( res.statusCode === 200){
         console.log(JSON.stringify(res));
         const response = res.body
         return `Você mora na ${response.logradouro}, bairro ${response.bairro}, cidade ${response.localidade} e DDD ${response.ddd}.`
     }else{
         return `Erro ao realizar a solicitação status retornado ${res.statusCode}`
     }
-    
-    console.log("teste 3")
 }
 
 const BuscaCepIntentHandler = {
