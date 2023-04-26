@@ -24,8 +24,8 @@ async function makePostRequest(url, cep) {
     var regExp = RegExp();
     console.log("teste")
     const options = {
-        method:'GET',
-        hostname: url +'/'+ cep.trim().replace(/[.-]/g,'') + '/json'
+        hostname: url +'/'+ cep.trim().replace(/[.-]/g,'') + '/json',
+        method:'GET'
     }
     console.log("teste 2");
     const res = await new Promise((resolve, reject)=> { 
