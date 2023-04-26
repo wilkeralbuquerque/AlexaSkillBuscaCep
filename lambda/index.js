@@ -40,7 +40,7 @@ const BuscaCepIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'BuscaCepIntent';
     },
     handle(handlerInput) {
-        const cep = handlerInput.requestEnvelope.request.intent.slots.cep.value.toString();
+        const cep = handlerInput.requestEnvelope.request.intent.slots.cep.value;
         
 
         const speakOutput = makePostRequest('https://viacep.com.br/ws',cep)
