@@ -47,7 +47,7 @@ const BuscaCepIntentHandler = {
     },
     handle(handlerInput) {
         const cep = handlerInput.requestEnvelope.request.intent.slots.cep.value;
-        const res = makePostRequest('viacep.com.br/ws',cep);
+        const res = makePostRequest('https://viacep.com.br/ws',cep);
         console.log('teste passou consulta')
         let speakOutput = '';
     if( res.statusCode === 200){
