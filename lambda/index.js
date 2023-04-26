@@ -29,6 +29,7 @@ async function makePostRequest(url, cep) {
     }
     console.log("teste 2");
     const res = await new Promise((resolve, reject)=> { 
+        console.log("teste  in promise");
         const req = https.request(options, (res)=>{
             let data = '';
             console.log("teste in await");
