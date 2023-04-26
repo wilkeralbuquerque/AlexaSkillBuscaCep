@@ -25,13 +25,16 @@ function makePostRequest(url, cep) {
     console.log("teste")
     const xhr = new XMLHttpRequest();
     xhr.open('GET', url +'/'+ cep.trim().replace(/[.-]/g,'') + '/json', false);
+    console.log("teste 4")
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onreadystatechange = function() {
     if (this.readyState === 4 && this.status === 200) {
         const response = JSON.parse(xhr.responseText);
+        console.log("teste 2")
         return `Você mora na ${response.logradouro}, bairro ${response.bairro}, cidade ${response.localidade} e DDD ${response.ddd}.`
         }
-    };
+    }
+    console.log("teste 3")
 }
 
 const BuscaCepIntentHandler = {
