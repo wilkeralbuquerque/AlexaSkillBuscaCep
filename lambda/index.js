@@ -4,7 +4,7 @@
  * session persistence, api calls, and more.
  * */
 const Alexa = require('ask-sdk-core');
-const XMLHttpRequest = require('XMLHttpRequest').XMLHttpRequest;
+const https = require('http-sync');
 
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
@@ -23,19 +23,21 @@ const LaunchRequestHandler = {
 function makePostRequest(url, cep) {
     var regExp = RegExp();
     console.log("teste")
-    console.log("teste 1.0")
-    const xhr = new XMLHttpRequest();
-    console.log("teste 2")
-    xhr.open('GET', url +'/'+ cep.trim().replace(/[.-]/g,'') + '/json', false);
-    console.log("teste 4")
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onreadystatechange = function() {
-    if (this.readyState === 4 && this.status === 200) {
-        const response = JSON.parse(xhr.responseText);
-        console.log("teste 2")
-        return `Você mora na ${response.logradouro}, bairro ${response.bairro}, cidade ${response.localidade} e DDD ${response.ddd}.`
-        }
+    const options = {
+        method:'GET',
+        hostname: url,
+        path:'/'+ cep.trim().replace(/[.-]/g,'') + '/json'
     }
+    console.log("teste 2");
+    const res = https.request(options);
+    console.log("teste 4");
+    if( res.statusCode == 200){
+        const response = res.body
+        return `Você mora na ${response.logradouro}, bairro ${response.bairro}, cidade ${response.localidade} e DDD ${response.ddd}.`
+    }else{
+        return `Erro ao realizar a solicitação status retornado ${res.statusCode}`
+    }
+    
     console.log("teste 3")
 }
 
