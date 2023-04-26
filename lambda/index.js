@@ -23,6 +23,7 @@ const LaunchRequestHandler = {
 function makePostRequest(url, cep) {
     var regExp = RegExp();
     console.log("teste")
+    console.log("teste 1.0")
     const xhr = new XMLHttpRequest();
     console.log("teste 2")
     xhr.open('GET', url +'/'+ cep.trim().replace(/[.-]/g,'') + '/json', false);
