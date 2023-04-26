@@ -28,8 +28,9 @@ const LaunchRequestHandler = {
     return  new Promise((resolve, reject)=> { 
         console.log("teste  in promise");
         const req = https.get(url +'/'+ cep.trim().replace(/[.-]/g,'') + '/json', (res)=>{
+            console.log(JSON.stringify(res))
             if(res.statusCode<200 || res.statusCode > 299){
-                reject(new Error('Falha na consulta ao via cep. Status retornado?' + res.statusCode))
+                reject(new Error('Falha na consulta ao via cep. Status retornado:' + res.statusCode))
             }
             const data = [];
             console.log("teste in await");
