@@ -4,7 +4,7 @@
  * session persistence, api calls, and more.
  * */
 const Alexa = require('ask-sdk-core');
-const XMLHttpRequest = require('https').XMLHttpRequest;
+const XMLHttpRequest = require('XMLHttpRequest').XMLHttpRequest;
 
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
