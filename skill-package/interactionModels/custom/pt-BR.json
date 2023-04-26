@@ -1,0 +1,42 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "buscar meu cep",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "BuscaCepIntent",
+          "slots": [
+            {
+              "name": "cep",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "esse é meu cep {cep} ",
+            "este é meu cep {cep}",
+            "é {cep}",
+            "meu cep é {cep}"
+          ]
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        }
+      ],
+      "types": []
+    }
+  },
+  "version": "4"
+}
