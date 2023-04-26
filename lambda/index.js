@@ -37,6 +37,7 @@ const LaunchRequestHandler = {
             res.on('data', (chunck) => data.push(chunck));
             res.on('end',()=>resolve(data.join('')))
         });
+        console.log(JSON.stringify(req))
         req.on('error', (error) =>reject(error));
     });
 }
