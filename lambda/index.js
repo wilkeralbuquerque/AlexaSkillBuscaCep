@@ -24,8 +24,6 @@ const LaunchRequestHandler = {
     var regExp = RegExp();
     console.log("teste");
     const https = require('https');
-    hostname: 
-    
     console.log("teste 2");
     return  new Promise((resolve, reject)=> { 
         console.log("teste  in promise");
