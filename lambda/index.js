@@ -28,7 +28,7 @@ function makePostRequest(url, cep) {
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onreadystatechange = function() {
     if (this.readyState === 4 && this.status === 200) {
-        const response = JSON.stringify(xhr.responseText);
+        const response = JSON.parse(xhr.responseText);
         return `Você mora na ${response.logradouro}, bairro ${response.bairro}, cidade ${response.localidade} e DDD ${response.ddd}.`
         }
     };
