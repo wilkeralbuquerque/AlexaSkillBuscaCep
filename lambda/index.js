@@ -74,7 +74,7 @@ const BuscaCepIntentHandler = {
         const cep = handlerInput.requestEnvelope.request.intent.slots.cep.value;
         
 
-        const speakOutput = await makePostRequest('https://viacep.com.br/ws',cep)
+        const speakOutput = await makePostRequest('viacep.com.br/ws',cep)
         return handlerInput.responseBuilder
             .speak(speakOutput)
             //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
