@@ -4,7 +4,8 @@
  * session persistence, api calls, and more.
  * */
 const Alexa = require('ask-sdk-core');
-
+const regExp = RegExp();
+const https = require('https');
 
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
@@ -20,20 +21,13 @@ const LaunchRequestHandler = {
     }
 };
 
- function makePostRequest(url, cep) {
-    var regExp = RegExp();
-    console.log("teste");
-    const https = require('https');
-    console.log("teste 2");
+ async function makePostRequest(url, cep) {
     return  new Promise((resolve, reject)=> { 
-        console.log("teste  in promise");
-        const req = https.get(url +'/'+ cep.trim().replace(/[.-]/g,'') + '/json', (res)=>{
-            console.log(res)
+        const req = https.get(`${url}/${cep.trim().replace(/[.-]/g,'')}/json`, (res)=>{
             if(res.statusCode<200 || res.statusCode > 299){
-                reject(new Error('Falha na consulta ao via cep. Status retornado:' + res.statusCode))
+                reject(new Error(`Falha na consulta ao via cep. Status retornado: ${res.statusCode}`))
             }
             const data = [];
-            console.log("teste in await");
             res.on('data', (chunk) => data.push(chunk));
             res.on('end',()=>resolve(data.join('')))
         });
@@ -46,23 +40,18 @@ const BuscaCepIntentHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'BuscaCepIntent';
     },
-   async handle(handlerInput) {
-       let speakOutput = '';
+    async handle(handlerInput) {
+        let speakOutput = '';
         const cep = handlerInput.requestEnvelope.request.intent.slots.cep.value;
         await makePostRequest('https://viacep.com.br/ws',cep).then((response)=>{
-        console.log('teste passou consulta')
-        const res = JSON.parse(response);
-        console.log(JSON.stringify(res));
-        console.log("teste dentro do if final.");
-        speakOutput = `Você mora na ${res.logradouro}, bairro ${res.bairro}, cidade ${res.localidade} e DDD ${res.ddd}.`
+            const res = JSON.parse(response);
+            speakOutput = `Você mora na ${res.logradouro}, bairro ${res.bairro}, cidade ${res.localidade} e DDD ${res.ddd}.`
         }).catch((error)=>{
-        console.log("teste dentro do if final, solicitação com erro");
-        speakOutput = `Erro ao realizar a solicitação status retornado. ${error.message}`
+            speakOutput = `Erro ao realizar a solicitação status retornado. ${error.message}`
         })
         
         return handlerInput.responseBuilder
             .speak(speakOutput)
-            //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
             .getResponse();
     }
 };
@@ -160,7 +149,7 @@ const ErrorHandler = {
     },
     handle(handlerInput, error) {
         const speakOutput = 'Sorry, I had trouble doing what you asked. Please try again.';
-        console.log(`~~~~ Error handled: ${JSON.stringify(error)}`);
+        console.error(`~~~~ Error handled: ${JSON.stringify(error)}`);
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
